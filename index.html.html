@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171633">
+<title>Superhero Academy</title>
+<style>
+:root{--ink:#171633;--paper:#fffdf7;--blue:#42d9f5;--pink:#ff4f9a;--yellow:#ffdf4d;--green:#b8f36b;--purple:#8b6bff}
+*{box-sizing:border-box}body{margin:0;background:#171633;color:var(--ink);font-family:ui-rounded,"Trebuchet MS",system-ui,sans-serif}
+button,select,input{font:inherit}button{cursor:pointer;touch-action:manipulation}
+.app{max-width:920px;margin:auto;min-height:100vh;padding:14px;background:radial-gradient(circle at 90% 0%,#4b327d 0,transparent 35%),#171633}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;color:white;margin:4px 2px 14px}.brand{font-weight:1000;letter-spacing:.04em;font-size:clamp(18px,4vw,27px);line-height:1}.brand span{color:var(--yellow)}.score{border:2px solid white;border-radius:999px;padding:8px 12px;font-weight:900;white-space:nowrap}
+.hero{background:var(--yellow);border:4px solid var(--ink);border-radius:22px;padding:clamp(18px,4vw,30px);box-shadow:7px 7px 0 var(--pink);position:relative;overflow:hidden}
+.kicker{font-weight:900;text-transform:uppercase;letter-spacing:.12em;font-size:12px}.hero h1{font-size:clamp(30px,7vw,55px);line-height:.98;margin:10px 0}.hero p{max-width:570px;font-size:16px;line-height:1.5;margin:8px 0 18px}.hero-art{position:absolute;right:18px;top:24px;font-size:clamp(54px,11vw,100px);transform:rotate(9deg);filter:drop-shadow(4px 4px 0 white);pointer-events:none}
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0}.controls label{font-weight:800;color:white;display:flex;align-items:center;gap:8px}.controls select{border:2px solid var(--ink);border-radius:12px;padding:10px;background:white;color:var(--ink);max-width:100%}
+.missions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}.mission{border:3px solid var(--ink);border-radius:18px;padding:16px;text-align:left;background:var(--paper);box-shadow:4px 4px 0 var(--blue);min-height:140px;color:var(--ink)}.mission:active,.primary:active,.choice:active{transform:translateY(2px)}.mission .emoji{font-size:31px}.mission h2{font-size:18px;margin:7px 0 4px}.mission p{font-size:13px;line-height:1.4;margin:0}.mission small{display:inline-block;margin-top:9px;background:var(--pink);color:white;border-radius:99px;padding:4px 8px;font-weight:900}
+.panel{background:var(--paper);border:3px solid var(--ink);border-radius:22px;padding:clamp(16px,4vw,28px);box-shadow:6px 6px 0 var(--blue);margin:18px 0}.progressline{height:10px;border-radius:99px;background:#e6e2f2;overflow:hidden;margin:10px 0 18px}.progressfill{height:100%;background:var(--pink);width:0;transition:width .25s}.question-meta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;color:#514b73}.question{font-size:clamp(22px,5vw,32px);line-height:1.15;margin:12px 0 16px;font-weight:1000}.story{background:#e9faff;border-left:5px solid #00bfe5;border-radius:8px;padding:13px;line-height:1.55;margin:12px 0}.answers{display:grid;gap:10px}.choice{border:2px solid var(--ink);border-radius:13px;background:white;padding:13px 14px;text-align:left;font-weight:800;min-height:50px;color:var(--ink)}.choice:hover{background:#fff6c8}.choice.correct{background:#dff9c6;border-color:#3d8d20}.choice.wrong{background:#ffe0eb;border-color:#c02662}.writebox{width:100%;padding:14px;border:2px solid var(--ink);border-radius:13px;font-size:17px;margin-bottom:10px;background:white;color:var(--ink)}.tiles{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.tile{background:#e7e1ff;border:2px solid var(--ink);border-radius:10px;padding:10px 12px;font-weight:900}.tile.used{opacity:.35}.built{min-height:54px;background:white;border:2px dashed #8b83a7;border-radius:13px;padding:10px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}.feedback{padding:13px;border-radius:12px;margin-top:14px;line-height:1.45;font-weight:700}.feedback.good{background:#dff9c6}.feedback.bad{background:#ffe0eb}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.primary,.secondary{border:2px solid var(--ink);border-radius:13px;padding:12px 17px;font-weight:1000}.primary{background:var(--pink);color:white;box-shadow:3px 3px 0 var(--ink)}.secondary{background:white;color:var(--ink)}.primary:disabled{opacity:.45;cursor:not-allowed}.hidden{display:none!important}.end{text-align:center}.end .big{font-size:64px}.end h2{font-size:clamp(26px,6vw,40px);margin:8px 0}.footer{color:#d9d5ee;font-size:12px;line-height:1.5;text-align:center;margin:22px 4px 8px}
+@media(max-width:480px){.missions{grid-template-columns:1fr}.hero-art{right:12px;top:14px;opacity:.8}.hero p{max-width:75%}.top{align-items:flex-start}.mission{min-height:0}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="brand">SUPERHERO <span>ACADEMY</span></div><div class="score">⭐ <span id="totalScore">0</span> XP</div></header>
+  <section class="hero" id="homeHero">
+    <div class="hero-art" aria-hidden="true">🦸🏽‍♀️</div>
+    <div class="kicker">Emergency alert · Metro City</div>
+    <h1>Save the city.<br>Power up your English.</h1>
+    <p>A supervillain has scrambled the city's communication systems. Complete language missions to restore power and become a hero!</p>
+    <button class="primary" onclick="document.getElementById('missions').scrollIntoView({behavior:'smooth'})">Choose a mission ↓</button>
+  </section>
+  <div class="controls">
+    <label for="level">Training level
+      <select id="level" onchange="renderMissions()"><option value="A2">A2 · Rookie</option><option value="B1" selected>B1 · Hero</option><option value="B2">B2 · Legend</option></select>
+    </label>
+    <label for="rounds">Mission length
+      <select id="rounds"><option value="5">5 questions</option><option value="8" selected>8 questions</option></select>
+    </label>
+  </div>
+  <section id="missions" class="missions">
+    <button class="mission" onclick="startMission('vocab')"><div class="emoji">💥</div><h2>1. Word Power</h2><p>Choose the best words to describe heroes, scenes and action.</p><small>VOCABULARY</small></button>
+    <button class="mission" onclick="startMission('verbs')"><div class="emoji">⚡</div><h2>2. Time Travel</h2><p>Repair the timeline with present and past-tense verbs.</p><small>IRREGULAR VERBS</small></button>
+    <button class="mission" onclick="startMission('sentences')"><div class="emoji">🧩</div><h2>3. Sentence Lab</h2><p>Build clear sentences and connect ideas like a pro.</p><small>SENTENCE BUILDING</small></button>
+    <button class="mission" onclick="startMission('reading')"><div class="emoji">🕵️</div><h2>4. Secret Files</h2><p>Read a mission report and answer questions to crack the case.</p><small>READING</small></button>
+  </section>
+  <section id="game" class="panel hidden">
+    <div class="question-meta"><span id="missionName">Mission</span><span id="qCount">Question 1</span></div>
+    <div class="progressline"><div id="progressfill" class="progressfill"></div></div>
+    <div id="story" class="story hidden"></div>
+    <div id="question" class="question"></div>
+    <div id="answerArea"></div>
+    <div id="feedback" class="feedback hidden" role="status" aria-live="polite"></div>
+    <div class="actions"><button id="checkBtn" class="primary" onclick="checkAnswer()">Check answer</button><button id="nextBtn" class="primary hidden" onclick="nextQuestion()">Next challenge →</button><button class="secondary" onclick="goHome()">Exit mission</button></div>
+  </section>
+  <section id="results" class="panel end hidden">
+    <div class="big" id="resultEmoji">🏆</div><div class="kicker">Mission report</div><h2 id="resultTitle">City saved!</h2><p id="resultText"></p><p><strong id="resultScore"></strong></p>
+    <div class="actions" style="justify-content:center"><button class="primary" onclick="startMission(currentMission)">Play again</button><button class="secondary" onclick="goHome()">Choose another mission</button></div>
+  </section>
+  <div class="footer">Practice mode · No accounts · No names collected · Scores stay in this browser session only.<br>Tip: Try a different training level to get a new challenge.</div>
+</div>
+<script>
+const bank = {
+A2:{
+vocab:[
+{q:"The hero moved very ___ to catch the falling child.",opts:["quickly","quiet","careful"],a:"quickly",why:"Quickly tells us how the hero moved."},
+{q:"The street was dark. Suddenly, a bright light ___ the sky.",opts:["filled","slept","wore"],a:"filled",why:"A light can fill the sky."},
+{q:"Choose the word that means 'very frightened'.",opts:["terrified","proud","calm"],a:"terrified",why:"Terrified means extremely frightened."},
+{q:"The villain made a loud ___ that shook the windows.",opts:["crash","whisper","smile"],a:"crash",why:"A crash is a loud, sudden noise."},
+{q:"Which word describes a hero who helps people?",opts:["brave","selfish","careless"],a:"brave",why:"A brave person faces danger to help."},
+{q:"The robot's eyes began to ___ red.",opts:["glow","taste","whisper"],a:"glow",why:"Lights glow when they shine."}] ,
+verbs:[
+{q:"Yesterday, Captain Comet ___ over the city.",opts:["flew","fly","flown"],a:"flew",why:"The past simple of fly is flew."},
+{q:"The hero has ___ the missing key.",opts:["found","finded","find"],a:"found",why:"The past participle of find is found."},
+{q:"Last night, the robots ___ the bridge.",opts:["broke","breaked","broken"],a:"broke",why:"The past simple of break is broke."},
+{q:"Every morning, Luna ___ her team.",opts:["helps","helped","help"],a:"helps",why:"For he/she/it in the present simple, use helps."},
+{q:"The villain ___ away before the police arrived.",opts:["ran","runned","run"],a:"ran",why:"The past simple of run is ran."},
+{q:"The hero ___ the door and entered the lab.",opts:["opened","open","opening"],a:"opened",why:"This action happened in the past."}],
+sentences:[
+{type:"build",q:"Build the sentence: start with 'Yesterday'.",words:["Yesterday,","the","hero","rescued","three","people."],answer:"Yesterday, the hero rescued three people.",why:"Start with the time phrase, then subject and verb."},
+{type:"build",q:"Build a sentence using 'because' to give a reason.",words:["The","city","was","safe","because","the","hero","stopped","the","robot."],answer:"The city was safe because the hero stopped the robot.",why:"Because introduces the reason."},
+{q:"Choose the correct sentence.",opts:["The hero were tired.","The hero was tired.","The hero be tired."],a:"The hero was tired.",why:"Use was with a singular subject in the past."},
+{q:"Complete: The alarm rang, ___ everyone ran outside.",opts:["so","but","although"],a:"so",why:"So shows the result."},
+{type:"type",q:"Type the past simple of 'go'.",answer:"went",why:"Go → went."},
+{q:"Choose the correct order.",opts:["The robot suddenly appeared.","Suddenly robot the appeared.","Appeared suddenly the robot."],a:"The robot suddenly appeared.",why:"A clear sentence usually follows subject + verb + other information."}],
+reading:[
+{q:"Why did the hero enter the station?",story:"At 8 p.m., a power cut stopped the trains in Metro City. Nova entered the station with a torch. She found a broken control panel and repaired it. Five minutes later, the lights returned and the trains began moving again.",opts:["To repair the control panel","To buy a train","To meet a friend"],a:"To repair the control panel",why:"The report says she found and repaired a broken control panel."},
+{q:"What happened after Nova repaired the panel?",story:"At 8 p.m., a power cut stopped the trains in Metro City. Nova entered the station with a torch. She found a broken control panel and repaired it. Five minutes later, the lights returned and the trains began moving again.",opts:["The trains moved again","The station closed forever","A storm began"],a:"The trains moved again",why:"The final sentence tells us the trains began moving."},
+{q:"Which tool did Nova carry?",story:"At 8 p.m., a power cut stopped the trains in Metro City. Nova entered the station with a torch. She found a broken control panel and repaired it. Five minutes later, the lights returned and the trains began moving again.",opts:["A torch","A rope","A map"],a:"A torch",why:"The text says Nova entered with a torch."},
+{type:"type",q:"How many minutes passed before the lights returned? Type the number.",answer:"5",story:"At 8 p.m., a power cut stopped the trains in Metro City. Nova entered the station with a torch. She found a broken control panel and repaired it. Five minutes later, the lights returned and the trains began moving again.",why:"The lights returned five minutes later."}]
+},
+B1:{
+vocab:[
+{q:"The villain vanished into the ___ before anyone could catch him.",opts:["shadows","sunshine","ceiling"],a:"shadows",why:"Shadows create a dark place to disappear into."},
+{q:"The hero's plan was risky, but she remained ___ and acted calmly.",opts:["determined","ordinary","confusedly"],a:"determined",why:"Determined means not giving up."},
+{q:"A powerful explosion sent pieces of metal ___ across the road.",opts:["scattering","sleeping","whispering"],a:"scattering",why:"Scattering means spreading in different directions."},
+{q:"Which phrase creates the strongest sense of danger?",opts:["A deafening alarm echoed through the tunnel.","A sound happened.","There was an alarm."],a:"A deafening alarm echoed through the tunnel.",why:"Deafening and echoed make the sound vivid."},
+{q:"The building began to ___ after the machine overloaded.",opts:["tremble","decorate","celebrate"],a:"tremble",why:"Tremble means shake slightly or rapidly."},
+{q:"Choose the best contrast word: The streets were empty, ___ the control room was crowded.",opts:["whereas","therefore","because"],a:"whereas",why:"Whereas contrasts two situations."}],
+verbs:[
+{q:"By the time the team arrived, the villain had ___ the evidence.",opts:["hidden","hid","hide"],a:"hidden",why:"After had, use the past participle: hidden."},
+{q:"The hero ___ the warning and entered the building anyway.",opts:["ignored","ignores","ignoring"],a:"ignored",why:"The narrative is in the past tense."},
+{q:"When the lights went out, everyone ___ silent.",opts:["became","become","becomes"],a:"became",why:"Become → became in the past simple."},
+{q:"The twins ___ a secret message beneath the desk.",opts:["found","founded","find"],a:"found",why:"Find → found."},
+{q:"Choose the correct sentence.",opts:["She has wrote a report.","She has written a report.","She have written a report."],a:"She has written a report.",why:"Present perfect uses has/have + past participle."},
+{type:"type",q:"Type the past simple of 'seek'.",answer:"sought",why:"Seek → sought."}],
+sentences:[
+{type:"build",q:"Build a sentence beginning with 'Although'.",words:["Although","the","bridge","was","damaged,","the","heroes","crossed","it","safely."],answer:"Although the bridge was damaged, the heroes crossed it safely.",why:"Although introduces a contrast; the main clause completes the idea."},
+{q:"Choose the best causal connective: The machine overheated, ___ the team shut it down.",opts:["so","although","meanwhile"],a:"so",why:"So introduces the result."},
+{type:"type",q:"Complete with one word: The hero wore a mask ___ nobody could recognise him.",answer:"so",why:"So explains the purpose or intended result here."},
+{q:"Which sentence uses a precise action verb?",opts:["The hero dashed through the doorway.","The hero went in a way.","The hero did the doorway."],a:"The hero dashed through the doorway.",why:"Dashed is a vivid verb meaning moved quickly."},
+{type:"build",q:"Build the sentence in a logical order.",words:["After","the","alarm","sounded,","Maya","guided","the","crowd","outside."],answer:"After the alarm sounded, Maya guided the crowd outside.",why:"The subordinate clause explains when the main action happened."},
+{q:"Choose the sentence with correct punctuation.",opts:["“Get back!” shouted Nova.","“Get back”! shouted Nova.","Get back!” shouted Nova."],a:"“Get back!” shouted Nova.",why:"The exclamation mark belongs inside the speech marks."}],
+reading:[
+{q:"Why did Kai leave the main road?",story:"When the warning siren sounded, Kai noticed smoke rising from the power station. The main road was blocked by fallen signs, so he took a narrow alley. Inside the station, he discovered that a damaged cable had started the fire. He alerted the firefighters and guided nearby residents to safety.",opts:["The main road was blocked","He wanted to avoid helping","The station was closed"],a:"The main road was blocked",why:"Fallen signs blocked the main road."},
+{q:"What caused the fire?",story:"When the warning siren sounded, Kai noticed smoke rising from the power station. The main road was blocked by fallen signs, so he took a narrow alley. Inside the station, he discovered that a damaged cable had started the fire. He alerted the firefighters and guided nearby residents to safety.",opts:["A damaged cable","A lightning-shaped costume","A fallen tree"],a:"A damaged cable",why:"Kai discovered that a damaged cable had started the fire."},
+{q:"What did Kai do after discovering the fire?",story:"When the warning siren sounded, Kai noticed smoke rising from the power station. The main road was blocked by fallen signs, so he took a narrow alley. Inside the station, he discovered that a damaged cable had started the fire. He alerted the firefighters and guided nearby residents to safety.",opts:["He alerted firefighters and guided residents","He repaired the cable alone","He returned home"],a:"He alerted firefighters and guided residents",why:"The final sentence gives both actions."},
+{type:"type",q:"Type one adjective from the report that describes the cable.",answer:"damaged",story:"When the warning siren sounded, Kai noticed smoke rising from the power station. The main road was blocked by fallen signs, so he took a narrow alley. Inside the station, he discovered that a damaged cable had started the fire. He alerted the firefighters and guided nearby residents to safety.",why:"The text describes the cable as damaged."}]
+},
+B2:{
+vocab:[
+{q:"The villain's apology sounded ___; nobody believed he was truly sorry.",opts:["insincere","invisible","invaluable"],a:"insincere",why:"Insincere means not expressing genuine feelings."},
+{q:"A ___ silence settled over the crowd as the tower leaned.",opts:["foreboding","cheerful","ordinary"],a:"foreboding",why:"Foreboding suggests that something bad may happen."},
+{q:"Which verb best conveys a controlled, careful movement?",opts:["edged","crashed","sprinted"],a:"edged",why:"Edged suggests moving slowly and cautiously."},
+{q:"The hero uncovered a ___ network of tunnels beneath the city.",opts:["vast","vague","vacant"],a:"vast",why:"Vast means extremely large."},
+{q:"Choose the most precise phrase for a sudden, confusing escape.",opts:["vanished amid the chaos","went away somewhere","left in a normal way"],a:"vanished amid the chaos",why:"The phrase is concise and creates a clear image."},
+{q:"The crowd's anger began to ___ when the truth emerged.",opts:["subside","assemble","multiply"],a:"subside",why:"Subside means become less intense."}],
+verbs:[
+{q:"If the hero had ___ the signal, the team would have escaped sooner.",opts:["seen","saw","see"],a:"seen",why:"Third conditional: had + past participle."},
+{q:"The evidence ___ the theory that the robot had been reprogrammed.",opts:["underpinned","underpin","underpinning"],a:"underpinned",why:"The past-tense verb underpinned fits the sentence."},
+{q:"No sooner had the alarm ___ than the doors locked.",opts:["sounded","sound","sounding"],a:"sounded",why:"After had, use the past participle."},
+{q:"The hero ___ responsibility rather than blaming the team.",opts:["took","taken","takes"],a:"took",why:"Take → took in the past simple."},
+{q:"Choose the grammatically correct sentence.",opts:["Had she known, she would have acted sooner.","If she would know, she acted sooner.","Had she knew, she would act sooner."],a:"Had she known, she would have acted sooner.",why:"Inverted third conditional: Had + subject + past participle."},
+{type:"type",q:"Type the past participle of 'overcome'.",answer:"overcome",why:"Overcome has the same base, past simple and past participle form."}],
+sentences:[
+{type:"build",q:"Build a sentence beginning with 'Despite'.",words:["Despite","the","damage,","the","team","managed","to","restore","power."],answer:"Despite the damage, the team managed to restore power.",why:"Despite is followed by a noun phrase, not a full clause."},
+{q:"Choose the best connective: The evidence appeared convincing; ___, one crucial detail was missing.",opts:["nevertheless","consequently","similarly"],a:"nevertheless",why:"Nevertheless introduces a contrast."},
+{type:"type",q:"Type a suitable one-word causal connective: The bridge collapsed, ___ the rescue team changed its route.",answer:"so",why:"So introduces the consequence of the collapse."},
+{q:"Which version creates the clearest tension?",opts:["A single red light blinked in the abandoned control room.","There was a light in a room.","The room had something red."],a:"A single red light blinked in the abandoned control room.",why:"Specific details create atmosphere and tension."},
+{type:"build",q:"Build a sentence beginning with 'While'.",words:["While","the","crowd","watched,","Nova","quietly","disabled","the","device."],answer:"While the crowd watched, Nova quietly disabled the device.",why:"While introduces a subordinate clause showing simultaneous action."},
+{q:"Choose the correctly punctuated dialogue.",opts:["“We have one chance,” Nova whispered.","“We have one chance”, Nova whispered.","“We have one chance” Nova whispered."],a:"“We have one chance,” Nova whispered.",why:"The comma belongs inside the closing speech mark."}],
+reading:[
+{q:"Why did the team distrust the official report?",story:"The official report claimed the blackout was caused by a storm. However, Nova found that the backup generator had been switched off manually, despite there being no storm damage. A security camera had also stopped recording moments before the blackout. Rather than accuse anyone without proof, Nova copied the available logs and asked an independent engineer to examine them.",opts:["Several details contradicted its explanation","The report was too short","The city had no security cameras"],a:"Several details contradicted its explanation",why:"The generator was manually switched off and the camera stopped unexpectedly."},
+{q:"Why did Nova contact an independent engineer?",story:"The official report claimed the blackout was caused by a storm. However, Nova found that the backup generator had been switched off manually, despite there being no storm damage. A security camera had also stopped recording moments before the blackout. Rather than accuse anyone without proof, Nova copied the available logs and asked an independent engineer to examine them.",opts:["To examine the evidence impartially","To repair her costume","To write a news story"],a:"To examine the evidence impartially",why:"She wanted the evidence examined before making an accusation."},
+{q:"What does 'rather than accuse anyone without proof' tell us about Nova?",story:"The official report claimed the blackout was caused by a storm. However, Nova found that the backup generator had been switched off manually, despite there being no storm damage. A security camera had also stopped recording moments before the blackout. Rather than accuse anyone without proof, Nova copied the available logs and asked an independent engineer to examine them.",opts:["She is cautious about making claims","She refuses to investigate","She trusts every official report"],a:"She is cautious about making claims",why:"She gathers and checks evidence before accusing anyone."},
+{type:"type",q:"Type one adverb from the report that describes how the generator was switched off.",answer:"manually",story:"The official report claimed the blackout was caused by a storm. However, Nova found that the backup generator had been switched off manually, despite there being no storm damage. A security camera had also stopped recording moments before the blackout. Rather than accuse anyone without proof, Nova copied the available logs and asked an independent engineer to examine them.",why:"Manually describes how the generator was switched off."}]
+}
+};
+const labels={vocab:"Word Power",verbs:"Time Travel",sentences:"Sentence Lab",reading:"Secret Files"};
+let currentMission="vocab",questions=[],index=0,score=0,correctCount=0,answered=false,selected="",built=[],shuffledOptions=[];
+const $=id=>document.getElementById(id);
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function renderMissions(){}
+function startMission(type){currentMission=type;const lvl=$("level").value;questions=shuffle(bank[lvl][type]).slice(0,Math.min(Number($("rounds").value),bank[lvl][type].length));index=0;score=0;correctCount=0;$("game").classList.remove("hidden");$("results").classList.add("hidden");$("homeHero").classList.add("hidden");$("missions").classList.add("hidden");document.querySelector(".controls").classList.add("hidden");$("totalScore").textContent="0";showQuestion();$("game").scrollIntoView({behavior:"smooth",block:"start"})}
+function showQuestion(){answered=false;selected="";built=[];const q=questions[index];$("missionName").textContent=labels[currentMission]+" · "+$("level").value;$("qCount").textContent=`Question ${index+1} of ${questions.length}`;$("progressfill").style.width=(index/questions.length*100)+"%";$("question").textContent=q.q;$("story").textContent=q.story||"";$("story").classList.toggle("hidden",!q.story);$("feedback").className="feedback hidden";$("feedback").textContent="";$("checkBtn").classList.remove("hidden");$("checkBtn").disabled=false;$("nextBtn").classList.add("hidden");const area=$("answerArea");area.innerHTML="";
+if(q.type==="type"){const inp=document.createElement("input");inp.className="writebox";inp.id="typed";inp.placeholder="Type your answer here…";inp.autocomplete="off";inp.setAttribute("aria-label","Your answer");area.appendChild(inp);inp.addEventListener("keydown",e=>{if(e.key==="Enter")checkAnswer()});}
+else if(q.type==="build"){const target=document.createElement("div");target.className="built";target.id="built";target.textContent="Tap the words below to build your sentence.";area.appendChild(target);const tiles=document.createElement("div");tiles.className="tiles";tiles.id="tiles";shuffle(q.words).forEach((w,i)=>{const b=document.createElement("button");b.className="tile";b.textContent=w;b.onclick=()=>{if(answered||b.classList.contains("used"))return;b.classList.add("used");built.push({word:w,el:b});drawBuilt()};tiles.appendChild(b)});area.appendChild(tiles);const undo=document.createElement("button");undo.className="secondary";undo.textContent="Undo last word";undo.onclick=()=>{const item=built.pop();if(item){item.el.classList.remove("used");drawBuilt()}};area.appendChild(undo);}
+else{const choices=document.createElement("div");choices.className="answers";shuffledOptions=shuffle(q.opts);shuffledOptions.forEach(opt=>{const b=document.createElement("button");b.className="choice";b.textContent=opt;b.onclick=()=>{if(answered)return;selected=opt;[...choices.children].forEach(c=>c.style.outline="");b.style.outline="4px solid #8b6bff"};choices.appendChild(b)});area.appendChild(choices)}
+}
+function drawBuilt(){const target=$("built");target.innerHTML="";if(!built.length){target.textContent="Tap the words below to build your sentence.";return}built.forEach(item=>{const s=document.createElement("span");s.className="tile";s.textContent=item.word;target.appendChild(s)})}
+function norm(s){return (s||"").trim().toLowerCase().replace(/[.!?,“”"'’]/g,"").replace(/\s+/g," ")}
+function checkAnswer(){if(answered)return;const q=questions[index];let answer;if(q.type==="type")answer=$("typed").value;else if(q.type==="build")answer=built.map(x=>x.word).join(" ");else answer=selected;if(!answer||!answer.trim()){showFeedback(false,"Choose or enter an answer first.");return}
+let ok;if(q.type==="build")ok=norm(answer)===norm(q.answer);else if(q.type==="type")ok=norm(answer)===norm(q.answer);else ok=answer===q.a;
+answered=true;if(ok){score+=10;correctCount++;$("totalScore").textContent=score;showFeedback(true,"Correct! "+q.why)}else{showFeedback(false,"Not quite. "+(q.a?"Correct answer: "+q.a+". ":"")+(q.answer?"One good answer: "+q.answer+". ":"")+q.why)}
+if(q.opts){document.querySelectorAll(".choice").forEach(b=>{if(b.textContent===q.a)b.classList.add("correct");else if(b.textContent===selected)b.classList.add("wrong");b.disabled=true})}
+if(q.type==="type")$("typed").disabled=true;if(q.type==="build")document.querySelectorAll(".tile").forEach(b=>b.disabled=true);
+$("checkBtn").classList.add("hidden");$("nextBtn").classList.remove("hidden");$("nextBtn").textContent=index===questions.length-1?"Finish mission ✓":"Next challenge →";$("progressfill").style.width=((index+1)/questions.length*100)+"%"}
+function showFeedback(good,msg){$("feedback").className="feedback "+(good?"good":"bad");$("feedback").textContent=(good?"✅ ":"💡 ")+msg;$("feedback").classList.remove("hidden")}
+function nextQuestion(){if(!answered)return;if(index<questions.length-1){index++;showQuestion()}else{showResults()}}
+function showResults(){$("game").classList.add("hidden");$("results").classList.remove("hidden");$("progressfill").style.width="100%";const pct=Math.round(correctCount/questions.length*100);$("resultEmoji").textContent=pct>=80?"🏆":pct>=50?"🦸":"💪";$("resultTitle").textContent=pct>=80?"City saved, hero!":pct>=50?"Mission nearly complete!":"Keep training, hero!";$("resultText").textContent=`You answered ${correctCount} out of ${questions.length} questions correctly (${pct}%).`; $("resultScore").textContent=`You earned ${score} XP`; $("results").scrollIntoView({behavior:"smooth",block:"start"})}
+function goHome(){$("game").classList.add("hidden");$("results").classList.add("hidden");$("homeHero").classList.remove("hidden");$("missions").classList.remove("hidden");document.querySelector(".controls").classList.remove("hidden");$("homeHero").scrollIntoView({behavior:"smooth",block:"start"})}
+</script>
+</body>
+</html>
